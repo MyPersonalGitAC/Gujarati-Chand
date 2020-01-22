@@ -1,0 +1,36 @@
+﻿<Window x:Class="WpfApp3.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp3"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" WindowState="Maximized">
+    <Window.Resources>
+        
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+        </Grid.RowDefinitions>
+        <ListBox x:Name="MainList" SelectionChanged="MainList_SelectionChanged"></ListBox>
+    <Canvas x:Name="cnv" Grid.Row="1">
+        
+        <RichTextBox FontSize="20"  AcceptsReturn="True" x:Name="txt" Height="{Binding RelativeSource={RelativeSource AncestorType=Canvas}, Path=ActualHeight}" Width="{Binding RelativeSource={RelativeSource AncestorType=Canvas}, Path=ActualWidth}" PreviewKeyDown="txt_PreviewKeyDown" >
+            <FlowDocument>
+          
+            </FlowDocument>
+        </RichTextBox>
+        <ListBox Visibility="Hidden" x:Name="LBox"  Canvas.Top="400" Width="100" Height="{Binding RelativeSource={RelativeSource AncestorType=Canvas}, Path=ActualHeight}" SelectionChanged="LBox_SelectionChanged" PreviewKeyDown="LBox_PreviewKeyDown_1" />
+
+
+        
+    </Canvas>
+        <StackPanel Orientation="Horizontal" Grid.Row="2">
+        <Button  Content="click" Height="25" Width="100" Click="Button_Click"/>
+        <Button Content="Button" Height="33" Width="127"  Click="Button_Click_1"/>
+        </StackPanel>
+    </Grid>
+</Window>
