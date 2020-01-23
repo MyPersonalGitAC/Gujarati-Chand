@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp3"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" WindowState="Maximized">
+        Title="કાવ્યા" Height="450" Width="800" WindowState="Maximized">
     <Window.Resources>
         
     </Window.Resources>
@@ -23,7 +23,7 @@
           
             </FlowDocument>
         </RichTextBox>
-        <ListBox Visibility="Hidden" x:Name="LBox"  Canvas.Top="400" Width="100" Height="{Binding RelativeSource={RelativeSource AncestorType=Canvas}, Path=ActualHeight}" SelectionChanged="LBox_SelectionChanged" PreviewKeyDown="LBox_PreviewKeyDown_1" />
+        <ListBox Visibility="Hidden" x:Name="LBox"  Canvas.Top="400" Width="100" Height="400" SelectionChanged="LBox_SelectionChanged" PreviewKeyDown="LBox_PreviewKeyDown_1" />
 
 
         

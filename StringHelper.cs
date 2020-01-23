@@ -232,6 +232,15 @@ namespace WpfApp3
 
         public void Clear()
         { Content.Clear(); }
+
+        public void RemoveOne()
+        {
+            if (Strs.Any())
+            {
+                int temp = Strs.Last().Length;
+                Content.Remove(Content.Length - temp, temp);
+            }
+        }
         public StructuredString()
         {
             Structure = String.Empty;
@@ -239,12 +248,15 @@ namespace WpfApp3
             
         }
 
+        public IEnumerable<string> Strs { get { return StringHelper.SplitSylable(Content.ToString()); } }
+        public IEnumerable<SylableType> Sbl { get { return StringHelper.LaghuGuru(Content.ToString()); } }
+
         public IEnumerable<Span> Spans
         {
             get {
 
-                var str = StringHelper.SplitSylable(Content.ToString()).ToArray();
-                var bl = StringHelper.LaghuGuru(Content.ToString()).ToArray();
+                var str = Strs.ToArray();
+                var bl = Sbl.ToArray();
                 List<Span> sp = new List<Span>();
                 for (int p = 0; p < str.Length; p++)
                 {
