@@ -17,11 +17,12 @@
         </Grid.RowDefinitions>
         <ListBox x:Name="MainList" SelectionChanged="MainList_SelectionChanged"></ListBox>
     <Canvas x:Name="cnv" Grid.Row="1">
-        
-        <RichTextBox FontSize="20"  AcceptsReturn="True" x:Name="txt" Height="{Binding RelativeSource={RelativeSource AncestorType=Canvas}, Path=ActualHeight}" Width="{Binding RelativeSource={RelativeSource AncestorType=Canvas}, Path=ActualWidth}" PreviewKeyDown="txt_PreviewKeyDown" >
-            <FlowDocument>
+
+            <RichTextBox  FontSize="20"  AcceptsReturn="True" x:Name="txt" Height="{Binding RelativeSource={RelativeSource AncestorType=Canvas}, Path=ActualHeight}" Width="{Binding RelativeSource={RelativeSource AncestorType=Canvas}, Path=ActualWidth}"  TextChanged="txt_TextChanged" PreviewKeyDown="txt_PreviewKeyDown"  >
+               
+                <FlowDocument>
           
-            </FlowDocument>
+                </FlowDocument>
         </RichTextBox>
         <ListBox Visibility="Hidden" x:Name="LBox"  Canvas.Top="400" Width="100" Height="400" SelectionChanged="LBox_SelectionChanged" PreviewKeyDown="LBox_PreviewKeyDown_1" />
 
@@ -29,8 +30,9 @@
         
     </Canvas>
         <StackPanel Orientation="Horizontal" Grid.Row="2">
-        <Button  Content="click" Height="25" Width="100" Click="Button_Click"/>
-        <Button Content="Button" Height="33" Width="127"  Click="Button_Click_1"/>
+        <!--<Button  Content="click" Height="25" Width="100" Click="Button_Click"/>-->
+        <Button Content="હેલ્પ" Height="33" Width="127"  Click="Button_Click_1" Margin="0,0,0,-3" VerticalAlignment="Top"/>
+            <TextBlock x:Name="blk" Height="33" Width="200"></TextBlock>
         </StackPanel>
     </Grid>
 </Window>

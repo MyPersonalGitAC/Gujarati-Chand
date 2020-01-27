@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
+using System.Diagnostics;
 
 namespace WpfApp3
 {
@@ -21,119 +22,42 @@ namespace WpfApp3
     /// </summary>
     public partial class MainWindow : Window
     {
-        static IEnumerable<string> ReadFile(string filename)
-        {
-            IEnumerable<string> data=null;
-            try
-            {
-                
-                
-                using (var file = new StreamReader(AppDomain.CurrentDomain.BaseDirectory+@"\"+filename))
-                {
-                    data=file.ReadToEnd().Split('\n').Select(x => x.TrimEnd().TrimStart().Trim());
-                    data.Union(StringHelper.Gan.Values);
-                    
-                }
-            }
-            catch (Exception ex)
-            {
-
-                MessageBox.Show("Words.txt not found:"+ex.Message);
-            }
-            finally
-            {
-                
-            }
-            return data;
-        }
+      
         public StructuredString MyStructureString=new StructuredString();
-        Paragraph myParagraph = new Paragraph();
-
         
-        static string[] words = ReadFile("words.txt").ToArray();//get all words from stored files
-
         
+        static string[] words;
+
         public MainWindow()
         {
             
             InitializeComponent();
+            words = StringHelper.ReadFile("Words.txt").ToArray();//get all words from stored files
             MainList.ItemsSource = StringHelper.Chand;
             MainList.SelectedIndex = 0;
             LBox.ToolTip = (new ToolTip()).Content = "Select the Word first than click Tab to Insert";
-
-
             MyStructureString.Structure = StringHelper.ExpandGanSutra(((KeyValuePair<string,string>)MainList.SelectedItem).Value);
+            //txt.Document.Blocks.Add(StructuredString.MyParagraph);
             
-            txt.Document.Blocks.Add(myParagraph);
-
+            
         }
 
-        private void txt_TextChanged(object sender, TextChangedEventArgs e)
-        {
-          
-
-
-          
-
-        }
+       
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-           // TextRange rng = new TextRange(txt.Document.ContentStart, txt.Document.ContentEnd);
-
-
-           // string r = rng.Text.TrimEnd();
-           // // var ab = string.Join("-",StringHelper.SplitSylable(r));
-           // var str = StringHelper.SplitSylable(r).ToArray();
-           // var bl = StringHelper.LaghuGuru(r).ToArray();
-           //// MessageBox.Show(string.Join("-", str) + "\n" + StringHelper.LuguGuruBinaryString(r.TrimEnd()));
-
-           // TextPointer pnt = txt.Document.ContentStart;
-           // pnt.GetPositionAtOffset(1);
-           // txt.Document.Blocks.Clear();
-           // Paragraph myParagraph = new Paragraph();
-           // bool k = false;
-
-           // List<Span> sp = new List<Span>();
-           // //sp.Add(new Span(new Run(StringHelper.Matra(r).ToString() + "-")));
-           // for(int p=0;p<str.Length;p++)
-           // {
-           //     sp.Add(new Span(new Run(str[p].Trim(new char[] {' '}))));
-
-           //     switch (bl[p])
-           //     {
-           //         case SylableType.Guru:
-           //             sp[p].Background = Brushes.LightPink;
-           //             break;
-           //         case SylableType.Lagu:
-           //             sp[p].Background = Brushes.LightCyan;
-           //             break;
-           //         case SylableType.Other:
-           //             sp[p].Background = Brushes.Transparent;
-           //             break;
-           //         default:
-           //             break;
-           //     }
-
-               
-
-           // }
-
-           // myParagraph.Inlines.AddRange(sp
-
-               
-           // );
-            
-
-           // txt.Document.Blocks.Add(myParagraph);
-            
-
+          
 
         }
 
-        public void showlist()
+        private void T_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            LBox.ItemsSource = MyStructureString.GetWords(words);
+            throw new NotImplementedException();
+        }
+
+        public void Showlist()
+        {
+            
             if (!LBox.Items.IsEmpty)
             {
                
@@ -143,21 +67,11 @@ namespace WpfApp3
             }
         }
 
-        private void LBox_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-          
-            
-
-        }
-
         private void txt_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            
-            RichTextBox R = sender as RichTextBox;
-            
-            
-            var position = R.CaretPosition.GetCharacterRect(LogicalDirection.Forward);
+            var position = txt.CaretPosition.GetCharacterRect(LogicalDirection.Forward);
 
+            
 
             if (LBox != null)
             {
@@ -165,110 +79,133 @@ namespace WpfApp3
                 LBox.SetValue(Canvas.TopProperty, position.Y + 25);
             }
 
-            switch (e.Key)
+            //if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
+            //{
+            //    MessageBox.Show("Pressed " + Keys.Shift);
+            //}
+
+            if (e.KeyboardDevice.IsKeyDown(Key.LeftCtrl)|| e.KeyboardDevice.IsKeyDown(Key.RightCtrl))
             {
-                case Key.Space:
-                    showlist();
-                    e.Handled = true;
-                   // LBox.Focus();
-                    break;
-                case Key.Up:
-                    if (LBox.Visibility == Visibility.Visible)
+                if(e.Key==Key.F)
+                {
+                    if (txt.Selection.Text != "")
                     {
-                        
-                        LBox.SelectedIndex = (LBox.SelectedIndex < 1) ? 0 : LBox.SelectedIndex - 1;
-                        
-                        
-                    }
-                   e.Handled = true;
-                    
-                    break;
-                case Key.Down:
-                    if (LBox.Visibility==Visibility.Visible)
-                    {
-                        
-                        LBox.SelectedIndex = (LBox.Items.Count == LBox.SelectedIndex + 1) ? LBox.Items.Count - 1 : LBox.SelectedIndex + 1;
-                        
-                    }
-                       e.Handled = true;
-                   
-                    break;
-                    //LBox.Focus();
-
-                    
-                case Key.Enter:
-                    if (MyStructureString.IsComplete)
-                    {
-                        myParagraph = new Paragraph();
-                        txt.Document.Blocks.Add(myParagraph);
-                        MyStructureString.Clear();
-                       
-                        //txt.CaretPosition = txt.CaretPosition.DocumentEnd;
-                        e.Handled = true;  
-                    }
-                    else
-                    { e.Handled = true; }
-                    break;
-                case Key.Tab:
-                    if (LBox.SelectedIndex >= 0)
-                    {
-                        MyStructureString.Append(LBox.SelectedItem.ToString().TrimEnd());
-                        myParagraph.Inlines.Clear();
-                        myParagraph.Inlines.AddRange(MyStructureString.Spans);
-                        
-                        txt.CaretPosition = txt.CaretPosition.DocumentEnd;
-                        
-                        LBox.SelectedItem = null;
-                      //  txt.Focus();
-                        LBox.Visibility = Visibility.Hidden;
-
-                        // txt.Focus();
-                       
-                        
+                        LBox.ItemsSource = MyStructureString.GetWords(words, StringHelper.OnlyLughuGuru(txt.Selection.Text));
+                        Showlist();
                     }
                     e.Handled = true;
-                    break;
-
-
-                case Key.Escape:
-                    LBox.Visibility = Visibility.Hidden;
-                    break;
-                case Key.Back:
-                    LBox.Visibility = Visibility.Hidden;
-                    e.Handled = true;
-                    //string cur = (new TextRange(txt.Document.ContentStart, txt.Document.ContentEnd).Text).TrimEnd();
-                    //if (cur != string.Empty)
-                    {
-                        // cur = cur.Substring(0, cur.Length - 1);
-                        //MyStructureString.Clear();
-                        //MyStructureString.Append(cur);
-                        //myParagraph.Inlines.Clear();
-
-                        MyStructureString.RemoveOne();
-                        //MyStructureString.Append(String.Join(String.Empty, myParagraph.Inlines.Select(line => line.ContentStart.GetTextInRun(LogicalDirection.Forward))));
-                        myParagraph.Inlines.Clear();
-                        myParagraph.Inlines.AddRange(MyStructureString.Spans);
-                        txt.CaretPosition = txt.CaretPosition.DocumentEnd;
-                    }
-                    break;
-                
-                  
-                default:
-                    //txt.Focus();
-                    showlist();
-                    e.Handled = true;
-                    break;
+                }
             }
 
-            //e.Handled = true;
+            if(e.Key==Key.Escape)
+            {
+                LBox.SelectedItem = null;
+                LBox.Visibility = Visibility.Hidden;
+            }
+            //switch (e.Key)
+            //{
+            //    case Key.Space:
+            //        Showlist();
+            //        e.Handled =false;
+            //        break;
+            //    case Key.Up:
+            //        if (LBox.Visibility == Visibility.Visible)
+            //        {
+                        
+            //            LBox.SelectedIndex = (LBox.SelectedIndex < 1) ? 0 : LBox.SelectedIndex - 1;
+                        
+                        
+            //        }
+            //       e.Handled = true;
+                    
+            //        break;
+            //    case Key.Down:
+            //        if (LBox.Visibility==Visibility.Visible)
+            //        {
+                        
+            //            LBox.SelectedIndex = (LBox.Items.Count == LBox.SelectedIndex + 1) ? LBox.Items.Count - 1 : LBox.SelectedIndex + 1;
+                        
+            //        }
+            //           e.Handled = true;
+                   
+            //        break;
+                   
+
+                    
+            //    case Key.Enter:
+            //        if (MyStructureString.IsComplete)
+            //        {
+            //            //myParagraph = new Paragraph();
+            //            //txt.Document.Blocks.Add(myParagraph);
+            //            //StructuredString.MyParagraph.Inlines.Add(new LineBreak(StructuredString.MyParagraph.ContentEnd));
+            //            //StructuredString.MyParagraph.ElementEnd.InsertLineBreak();
+            //            e.Handled =true;
+                        
+            //        }
+            //        else
+            //        { e.Handled = true;
+
+                        
+            //        }
+            //        break;
+            //    case Key.Tab:
+            //        if (LBox.SelectedIndex >= 0)
+            //        {
+                        
+            //           // StructuredString.MyParagraph.Inlines.Add(new Run(LBox.SelectedItem.ToString()));
+            //            // ((Run)myParagraph.Inlines.LastInline).Text = ((Run)myParagraph.Inlines.LastInline).Text + LBox.SelectedItem.ToString().TrimEnd();
+
+                       
+            //            txt.CaretPosition = txt.CaretPosition.DocumentEnd;
+                        
+            //            LBox.SelectedItem = null;
+                      
+            //            LBox.Visibility = Visibility.Hidden;
+
+            //        }
+            //        e.Handled = true;
+            //        break;
+
+
+            //    case Key.Escape:
+            //        LBox.Visibility = Visibility.Hidden;
+            //        break;
+            //    case Key.Back:
+            //        LBox.Visibility = Visibility.Hidden;
+            //        e.Handled = false;
+                    
+            //        {
+                        
+            //            //MyStructureString.RemoveOne();
+            //            //myParagraph.Inlines.Clear();
+            //            //myParagraph.Inlines.AddRange(MyStructureString.Spans);
+            //            //txt.CaretPosition = txt.CaretPosition.DocumentEnd;
+                        
+            //        }
+            //        break;
+                
+                  
+            //    default:
+                    
+            //        if(!LBox.IsVisible)
+            //        Showlist();
+
+                    
+                   
+                 
+            //        e.Handled = false;
+                    
+            //        break;
+            //}
+
+            
                 
         }
 
         private void LBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // MessageBox.Show(LBox.SelectedItem.ToString());
            
-            
+           
             
         }
 
@@ -278,31 +215,122 @@ namespace WpfApp3
             {
                 e.Handled = true;
 
-                MyStructureString.Append(LBox.SelectedItem.ToString().TrimEnd());
-                myParagraph.Inlines.Clear();
-                myParagraph.Inlines.AddRange(MyStructureString.Spans);
+                //StructuredString.MyParagraph.Inlines.Add(new Run(LBox.SelectedItem.ToString()));
 
-                txt.CaretPosition = txt.CaretPosition.DocumentEnd;
+
+                txt.Selection.Text = LBox.SelectedItem.ToString();
+
+                        
 
                 LBox.SelectedItem = null;
+
+                
 
                 //  txt.Focus();
                 LBox.Visibility = Visibility.Hidden;
                 LBox.MoveFocus(new TraversalRequest(FocusNavigationDirection.Previous));
             }
 
+            if (e.Key==Key.Escape)
+            {
+                LBox.SelectedItem = null;
+                LBox.Visibility = Visibility.Hidden;
+                e.Handled = true;
+            }
+
         }
+
+       
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(StringHelper.ExpandGanSutra("યમનગાગાગાગા"));
-            
+            String HelpMsg = "ટેક્ષ બોક્ષ માં પંકતિ લખો\n સમાન શબ્દ સોધવા માટે શબ્દ ને હાઇ લાઇટ કરી Ctrl + F પ્રેસ કરો\n લિસ્ટમાં શબ્દ પસંદ કરી TAB દબાવો\n ઉપર થી છંદ પણ પસંદ કરી શકાય છે, જે આપમેળે ભુલ બતાવશે\n શબ્દકોશ \"Words.txt\" ફાઇલ માં છે, આ ફાઇલ માં નવા શબ્દ ઉમેરી શકાય છે    ";
+            MessageBox.Show(HelpMsg);
         }
+
+        
 
         private void MainList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            MyStructureString.Clear();
-            MyStructureString.Structure= StringHelper.ExpandGanSutra(((KeyValuePair<string, string>)MainList.SelectedItem).Value);
+           
+            MyStructureString.Structure = StringHelper.ExpandGanSutra(((KeyValuePair<string, string>)MainList.SelectedItem).Value);
+            txt.TextChanged -= txt_TextChanged;
+            SyntaxHilighter.CheckGrammer(txt.Document, txt.Document.ContentStart, txt.Document.ContentEnd, MyStructureString);
+            txt.TextChanged += txt_TextChanged;
+        
+
         }
-    }
+
+        private void txt_TextChanged_1(object sender, TextChangedEventArgs e)
+        {
+            
+          //  appendhelper();
+            
+        }
+
+        private void txt_PreviewKeyUp(object sender, KeyEventArgs e)
+        {
+          
+
+
+        }
+
+        private void txt_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var txtStatus = sender as System.Windows.Controls.RichTextBox;
+            
+            if (txtStatus.Document == null)
+                return;
+            txtStatus.TextChanged -= txt_TextChanged;
+            //  SyntaxHilighter.FormatDocument(txtStatus.Document, txt.Document.ContentStart, txt.Document.ContentEnd);
+
+
+
+
+            TextChange Change=null;
+            if (e.Changes.Any())
+            {
+                Change = e.Changes.OrderBy(x => x.Offset).First();
+            }
+            
+               
+
+            if(Change!=null)
+            {
+
+                    TextPointer St=null, En=null;
+
+                if (txt.Document.ContentStart.GetPositionAtOffset(Change.Offset).Paragraph != null)
+                    St = txt.Document.ContentStart.GetPositionAtOffset(Change.Offset).Paragraph.ContentStart;
+                else if (txt.CaretPosition.GetNextContextPosition(LogicalDirection.Backward) != null)
+                    St = txt.CaretPosition.GetNextContextPosition(LogicalDirection.Backward).Paragraph.ContentStart;
+                else
+                    St = txt.Document.ContentStart;
+
+                
+
+                   
+                En = txt.CaretPosition.GetNextContextPosition(LogicalDirection.Forward);
+                if (En == null)
+                    En = txt.Document.ContentEnd;
+                string temp = (new TextRange(St, En)).Text;
+               
+                
+                blk.Text ="લઘુ અને ગુરુ: "+StringHelper.OnlyLughuGuru(temp).Count().ToString() +"\tમાત્રા: "+ StringHelper.Matra(temp).ToString();
+
+
+
+                 //   SyntaxHilighter.FormatDocument(txt.Document,St,En);
+
+                  SyntaxHilighter.CheckGrammer(txt.Document, St, En,MyStructureString);
+
+
+                
+            }
+
+            txtStatus.TextChanged += txt_TextChanged;
+        }
+    
 }
+    }
+
